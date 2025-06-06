@@ -70,4 +70,4 @@ estudianteSchema.methods.createToken = function () {
   return tokenGenerado;
 };
 
-export default model("Usuario", estudianteSchema);
+export default model("Estudiantes", estudianteSchema);

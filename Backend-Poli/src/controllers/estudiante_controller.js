@@ -1,9 +1,9 @@
-import { sendMailToRegister } from "../config/nodemailer";
-import Estudiante from "../models/Estudiante";
+import { sendMailToRegister } from "../config/nodemailer.js";
+import Estudiante from "../models/Estudiante.js";
 
 const registro = async (req,res) => {
     
-    const {email,password} = req.body
+    const {nombre, email,password} = req.body
 
     //Verifica que no exista campo vacios
     if(Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos debes llenar todo los campos"})
@@ -20,7 +20,7 @@ const registro = async (req,res) => {
     const token = nuevoEstudiante.createToken()
 
     //Enviar correo y guardar estudiante nuevo
-    sendMailToRegister(email,token)
+    sendMailToRegister(nombre, email, token);
     await nuevoEstudiante.save()
     res.status(200).json({msg:"Revisa tu correo electronico para verificar tu cuenta"})
 

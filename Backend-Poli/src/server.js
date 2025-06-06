@@ -2,7 +2,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
-import routerEstudiantes from './routers/estudiante_router'
+import routerEstudiantes from './routers/estudiante_router.js'
 
 // INICIAMOS
 
