@@ -2,6 +2,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import cors from 'cors'
+import routerEstudiantes from './routers/estudiante_router'
 
 // INICIAMOS
 
@@ -23,5 +24,13 @@ app.use(express.json())
 app.get('/',(req,res)=>{
     res.send("Server on")
 })
+
+
+// Rutas 
+app.use('/api',routerEstudiantes)
+
+// Rutas que no existen
+app.use((req,res)=>{res.status(404).send("Endpoint no encontrado")})
+
 
 export default app

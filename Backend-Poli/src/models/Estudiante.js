@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import bcrypt from "bcryptjs";
 
-const usuarioSchema = new Schema(
+const estudianteSchema = new Schema(
   {
     nombre: {
       type: String,
@@ -52,22 +52,22 @@ const usuarioSchema = new Schema(
 );
 
 // Método para encriptar contraseña
-usuarioSchema.methods.encrypPassword = async function (password) {
+estudianteSchema.methods.encrypPassword = async function (password) {
   const salt = await bcrypt.genSalt(10);
   const passwordEncrypt = await bcrypt.hash(password, salt);
   return passwordEncrypt;
 };
 
 // Método para comparar contraseña
-usuarioSchema.methods.matchPassword = async function (password) {
+estudianteSchema.methods.matchPassword = async function (password) {
   const respuesta = await bcrypt.compare(password, this.password);
   return respuesta;
 };
 
 // Método para crear token
-usuarioSchema.methods.createToken = function () {
-  const tokenGenerado = (this.token = Math.random().toString(36).slice(2));
+estudianteSchema.methods.createToken = function () {
+  const tokenGenerado = this.token = Math.random().toString(36).slice(2)
   return tokenGenerado;
 };
 
-export default model("Usuario", usuarioSchema);
+export default model("Usuario", estudianteSchema);
