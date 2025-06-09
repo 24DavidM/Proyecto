@@ -1,8 +1,9 @@
-import { sendMailToRegister } from "../config/nodemailer.js";
+import { sendMailToRecoveryPassword, sendMailToRegister } from "../config/nodemailer.js";
 import Estudiante from "../models/Estudiante.js";
 
 const registro = async (req,res) => {
     
+    // Obtener los datos
     const {nombre, email,password} = req.body
 
     //Verifica que no exista campo vacios
@@ -26,6 +27,44 @@ const registro = async (req,res) => {
 
 }
 
+const confirmarMail = async(req,res) => { 
+    // Obtener el token
+    const {token} = req.params
+
+    //Verificar el token
+    const estudianteBDD = await Estudiante.findOne({token})
+
+    //Verificar si ya se verifico el token
+    if(!estudianteBDD?.token) return res.status(404).json({msg:"La cuenta ya ha sido confirmada"})
+        
+    //Cambiar el estado del token
+    estudianteBDD.token = null
+    estudianteBDD.emailConfirmado = true
+    await estudianteBDD.save()
+    res.status(200).json({msg:"Cuenta confirmada correctamente"})
+}
+
+const recuperarPassword = async(req,res) => {
+    //Obtener el email
+    const {email} = req.body
+
+    //Verificar que no exista un campo vacio
+    if (Object.values(req.body).includes("")) return res.status(404).json({msg:"Lo sentimos, debes ingresar tu correo"})
+
+    //Buscamos en la base el correo
+    const estudianteBDD = await Estudiante.findOne({email})
+    if (!estudianteBDD) return res.status(404).json({msg:"Lo sentimos, el usuario no se encuentra registrado"})
+
+    //Creamos un nuevo token
+    const token = estudianteBDD.createToken()
+    estudianteBDD.token = token
+    sendMailToRecoveryPassword(email,token)
+    await estudianteBDD.save()
+    res.status(200).json({msg:"Revisa tu correo para restablecer la contraseña"})
+
+}
 export {
-    registro
+    registro,
+    confirmarMail,
+    recuperarPassword
 }
