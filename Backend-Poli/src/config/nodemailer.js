@@ -18,7 +18,7 @@ const sendMailToRegister = (nombre, userMail, token) => {
 
 
 let mailOptions = {
-    from: 'adminpoliventas@epn.edu.ec',
+    from: '"PoliVentas 🦉" <no-reply@gmail.com>',
     to: userMail,
     subject: "🦉 PoliVentas - Confirmar tu cuenta",
     html: `
