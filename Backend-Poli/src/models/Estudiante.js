@@ -8,6 +8,11 @@ const estudianteSchema = new Schema(
       required: true,
       trim: true,
     },
+    apellido: {
+      type: String,
+      required: true,
+      trim: true,
+    },
     telefono: {
       type: String,
       default: null,

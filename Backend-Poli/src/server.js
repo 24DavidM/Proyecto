@@ -16,6 +16,8 @@ app.use(cors())
 
 //MIDDLEWARES
 app.use(express.json())
+app.use(express.urlencoded({ extended: true })); // Para formularios tipo <form>
+
 
 
 

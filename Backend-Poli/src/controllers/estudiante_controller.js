@@ -63,8 +63,72 @@ const recuperarPassword = async(req,res) => {
     res.status(200).json({msg:"Revisa tu correo para restablecer la contraseña"})
 
 }
+
+const comprobarTokenPassword = async (req, res) =>{
+    // Obtener el token
+    const {token} = req.params
+
+    // Verificar el token con el de la BD
+    const estudianteBDD = await Estudiante.findOne({token})
+    if(estudianteBDD.token !== token) return res.status(404).json({msg:"Lo sentimos no se puede validar la cuenta"})
+    
+    // Guardar 
+    await estudianteBDD.save()
+    res.status(200).json({msg:"Token confirmado ya puedes crear tu contraseña"})
+}
+
+
+const crearNuevoPassword = async (req,res) => {
+    // Obtener contraseña
+    const{password,confirmPassword} = req.body
+
+    //Validaciones
+    if(Object.values(req.body).includes("")) return res.status(404).json({msg:"Lo sentimos, debes llenar todos los campos"})
+
+    if(password!==confirmPassword) return res.status(404).json({msg:"Lo sentimos, los password no coinciden"})
+
+    const estudianteBDD = await Estudiante.findOne({token:req.params.token})
+
+    if (estudianteBDD.token !== req.params.token) return res.status(404).json({msg:"Lo sentimos, la cuenta no se puede validar"})
+
+
+    estudianteBDD.token = null
+    estudianteBDD.password = await estudianteBDD.encrypPassword(password)
+    await estudianteBDD.save()
+
+    res.status(200).json({msg:"Felicitacioens, ya puedes inciar sesión con tu nuevo password"})
+}
+
+const login = async (req,res) =>{
+  const {email, password} = req.body
+
+  if (Object.values(req.body).includes("")) return res.status(400).json({msg:"Lo sentimos debes llenar todo los campos"});
+
+  const estudianteBDD = await Estudiante.findOne({email}).select("-status -__v -updatedAt -createdAt")
+
+  if(estudianteBDD?.confirmEmail === false) return res.status(403).json({msg:"Lo setimos debes confirmar tu cuenta antes de iniciar sesión"})
+
+  if(!estudianteBDD) return res.status(404).json({msg:"Lo sentimos el usuario no se encuentra registrado"});
+
+  const verificarPassword = await estudianteBDD.matchPassword(password)
+  if(!verificarPassword) return res.status(401).json({msg:"Lo sentimos el password es incorrecto"})
+
+  const {nombre,apellido,direccion,telefono,_id,rol} = estudianteBDD
+
+  res.status(200).json({
+    rol,
+    nombre,
+    apellido,
+    direccion,
+    telefono,
+    _id
+  })
+}
 export {
     registro,
     confirmarMail,
-    recuperarPassword
+    recuperarPassword,
+    comprobarTokenPassword,
+    crearNuevoPassword,
+    login
 }
