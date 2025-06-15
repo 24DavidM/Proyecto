@@ -37,6 +37,7 @@ const estudianteSchema = new Schema(
       type: String,
       enum: ["admin", "vendedor", "estudiante"],
       default: "estudiante",
+      
     },
     estado: {
       type: Boolean,
